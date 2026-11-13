@@ -447,7 +447,103 @@ INCLUDE_ASM("asm/levels", func_L01_003D79D0);
 
 INCLUDE_ASM("asm/levels", func_L01_003D7C60);
 
-INCLUDE_ASM("asm/levels", func_L01_003D80D0);
+/* localdecomp:start func_L01_003D80D0 */
+typedef int s128_3D80D0 __attribute__((mode(TI)));
+typedef struct {
+    s128_3D80D0 dir;
+    s32 x10;
+    s32 x14;
+    s32 x18;
+    s32 x1C;
+    u8 p20[4];
+    s32 x24;
+    u8 p28[4];
+    s32 x2C;
+    u8 p30[0x110];
+    f32 x140;
+    f32 x144;
+    f32 x148;
+    f32 x14C;
+    f32 x150;
+    f32 x154;
+    f32 x158;
+    f32 x15C;
+} V_3D80D0;
+typedef struct {
+    u8 p0[0x10];
+    s128_3D80D0 pos;
+    u8 p20;
+    u8 pad21[2];
+    u8 x23;
+    u8 p24[8];
+    f32 x2C;
+    u8 x30;
+    u8 x31;
+    u16 x32;
+    u16 x34;
+    u8 p36[0x32];
+    V_3D80D0 *x68;
+    u8 p6C[0x54];
+    u8 xC0[0x10];
+    u8 xD0[0x20];
+    f32 xF0;
+    f32 xF4;
+    f32 xF8;
+} M_3D80D0;
+extern void func_003C5180(void *, void *, s32);
+extern void func_0038CF68(void *dst, void *src, f32 s);
+extern f32 func_0038D160(f32 a, f32 b);
+extern f32 func_0038DAB8(f32 a, f32 b);
+extern f32 func_0038CED8(void *);
+extern void func_0038D308(void *a, void *b);
+extern void func_L01_0043B9E8(void *, s32, s32, s32);
+extern s32 func_L01_004C85C8(void *, f32, f32, f32, s32);
+
+/* quantum_whip_wave_spawn: spawns the Quantum Whip cutting wave (class 0x1CB8, 0.5 u/frame, 40 frames) at pos, flying along dir. */
+M_3D80D0 *func_L01_003D80D0(void *unused_a0, s128_3D80D0 *pos, f32 *dir) {
+    f32 tmp[4];
+    f32 scaled[4];
+    f32 hdg;
+    M_3D80D0 *m;
+    V_3D80D0 *v;
+    func_003C5180(pos, tmp, 1);
+    m = (M_3D80D0 *)func_003C24B0(0x1CB8, 0x200);
+    if (m) {
+        m->x30 = 0xFF;
+        m->x32 = 0xFF;
+        m->x31 = 1;
+        m->p20 = 0;
+        v = m->x68;
+        m->pos = *pos;
+        *(s128_3D80D0 *)v = *(s128_3D80D0 *)dir;
+        m->x2C = 0.1f;
+        v->x10 = 0;
+        v->x14 = 0x21;
+        func_0038CF68(scaled, dir, 1.0f);
+        v->x150 = -2.25f;
+        v->x2C = -1;
+        v->x140 = 2.25f;
+        v->x144 = 0;
+        v->x148 = 0;
+        v->x14C = 1.0f;
+        v->x154 = 0;
+        v->x158 = 0;
+        v->x15C = 1.0f;
+        v->x24 = 0;
+        hdg = func_0038D160(dir[0], dir[1]);
+        m->xF8 = func_0038DAB8(hdg, 1.5707964f);
+        m->xF0 = -func_0038D160(func_0038CED8(dir), dir[2]);
+        func_0038D308(m->xC0, &m->xF0);
+        func_0038CF68(v, v, 0.5f);
+        func_0038CF68(m->xD0, m->xD0, 3.0f);
+        m->x34 = (m->x34 | 0x100) & 0xFDFF;
+        m->x23 = 0x40;
+        func_L01_0043B9E8(m, 0, 0, 0);
+        v->x1C = func_L01_004C85C8(m, 1.0f, 1.0f, 1.0f, 0);
+    }
+    return m;
+}
+/* localdecomp:end func_L01_003D80D0 */
 
 INCLUDE_ASM("asm/levels", func_L01_003D8298);
 
