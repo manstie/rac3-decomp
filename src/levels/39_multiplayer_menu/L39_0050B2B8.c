@@ -1,6 +1,68 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/levels", func_L39_0050B2B8);
+/* localdecomp:start func_L39_0050B2B8 */
+typedef struct {
+    unsigned long *d;
+    s32 top;
+    s32 dmax;
+    s32 neg;
+    s32 flags;
+} BN_0050B2B8;
+typedef struct {
+    s32 tos;
+    BN_0050B2B8 bn[1];
+} Ctx_0050B2B8;
+typedef struct {
+    s32 use_word;
+    s32 ri_bits;
+    s32 ri;
+    BN_0050B2B8 RR;
+    BN_0050B2B8 N;
+    BN_0050B2B8 Ni;
+    unsigned long n0;
+} Mont_0050B2B8;
+
+struct BN_0050B748;
+extern struct BN_0050B748 *func_L39_004FC4B8(struct BN_0050B748 *, s32);
+extern void func_L39_0050BA58(unsigned long *, unsigned long *, s32, unsigned long *);
+extern void func_L39_004FD0F8(unsigned long *, unsigned long *, s32, unsigned long *, s32);
+extern void func_L39_0050BEE0(unsigned long *, unsigned long *, unsigned long *, s32, unsigned long);
+extern void func_L39_004FC318(void *);
+
+/* OpenSSL BN_mod_mul_montgomery (word version) */
+s32 func_L39_0050B2B8(BN_0050B2B8 *r, BN_0050B2B8 *a, BN_0050B2B8 *b, Mont_0050B2B8 *mont, Ctx_0050B2B8 *ctx) {
+    BN_0050B2B8 *tmp, *tmp2;
+    s32 retn;
+    s32 i, num, max;
+
+    retn = 0;
+    num = mont->ri;
+    tmp = &ctx->bn[ctx->tos++];
+    tmp2 = &ctx->bn[ctx->tos++];
+
+    max = num * 2;
+    if (((max <= tmp->dmax) ? tmp : (BN_0050B2B8 *)func_L39_004FC4B8((struct BN_0050B748 *)tmp, max)) == 0) goto err;
+    if (((num * 2 <= r->dmax) ? r : (BN_0050B2B8 *)func_L39_004FC4B8((struct BN_0050B748 *)r, num * 2)) == 0) goto err;
+
+    if (a == b) {
+        if (((num * 2 <= tmp2->dmax) ? tmp2 : (BN_0050B2B8 *)func_L39_004FC4B8((struct BN_0050B748 *)tmp2, num * 2)) == 0) goto err;
+        func_L39_0050BA58(tmp->d, a->d, a->top, tmp2->d);
+    } else {
+        func_L39_004FD0F8(tmp->d, a->d, a->top, b->d, b->top);
+    }
+    for (i = a->top + b->top; i < num * 2; i++) tmp->d[i] = 0;
+    tmp->top = max;
+    tmp->neg = 0;
+    retn = 1;
+    func_L39_0050BEE0(r->d, tmp->d, mont->N.d, num, mont->n0);
+    r->neg = 0;
+    r->top = num;
+    func_L39_004FC318(r);
+err:
+    ctx->tos -= 2;
+    return retn;
+}
+/* localdecomp:end func_L39_0050B2B8 */
 
 INCLUDE_ASM("asm/levels", func_L39_0050B4C0);
 
@@ -59,11 +121,134 @@ s32 func_L39_0050B748(BN_0050B748 *r, BN_0050B748 *a, s32 n) {
 }
 /* localdecomp:end func_L39_0050B748 */
 
-INCLUDE_ASM("asm/levels", func_L39_0050B8C8);
+/* localdecomp:start func_L39_0050B8C8 */
+typedef struct {
+    unsigned long *d;
+    s32 top;
+    s32 dmax;
+    s32 neg;
+    s32 flags;
+} BN_0050B8C8;
+typedef struct {
+    s32 tos;
+    BN_0050B8C8 bn[1];
+} Ctx_0050B8C8;
+
+extern void func_L39_0050BA58(unsigned long *, unsigned long *, s32, unsigned long *);
+extern void *func_L39_004FC5C0(void *, void *);
+
+/* OpenSSL BN_sqr */
+s32 func_L39_0050B8C8(BN_0050B8C8 *r, BN_0050B8C8 *a, Ctx_0050B8C8 *ctx) {
+    s32 max, al;
+    BN_0050B8C8 *tmp, *rr;
+    unsigned long t4[8];
+    unsigned long t8[16];
+
+    tmp = &ctx->bn[ctx->tos];
+    rr = (a != r) ? r : &ctx->bn[ctx->tos + 1];
+
+    al = a->top;
+    if (al <= 0) {
+        r->top = 0;
+        return 1;
+    }
+    max = al + al;
+    if (((max <= rr->dmax) ? rr : (BN_0050B8C8 *)func_L39_004FC4B8((void *)rr, max)) == 0) return 0;
+    rr->top = max;
+    rr->neg = 0;
+
+    if (al == 4) {
+        func_L39_0050BA58(rr->d, a->d, 4, t4);
+    } else if (al == 8) {
+        func_L39_0050BA58(rr->d, a->d, 8, t8);
+    } else {
+        if (((max <= tmp->dmax) ? tmp : (BN_0050B8C8 *)func_L39_004FC4B8((void *)tmp, max)) == 0) return 0;
+        func_L39_0050BA58(rr->d, a->d, al, tmp->d);
+    }
+
+    if ((max > 0) && (rr->d[max - 1] == 0)) rr->top--;
+    if (rr != r) func_L39_004FC5C0(r, rr);
+    return 1;
+}
+/* localdecomp:end func_L39_0050B8C8 */
 
 INCLUDE_ASM("asm/levels", func_L39_0050BA58);
 
-INCLUDE_ASM("asm/levels", func_L39_0050BB88);
+/* localdecomp:start func_L39_0050BB88 */
+typedef struct BN_0050BB88 {
+    unsigned long *d;
+    s32 top;
+    s32 dmax;
+    s32 neg;
+    s32 flags;
+} BN_0050BB88;
+typedef struct CTX_0050BB88 {
+    s32 tos;
+    BN_0050BB88 bn[1];
+} CTX_0050BB88;
+extern s32 func_L39_0050BD10();
+extern u8 D_L39_00479810[];
+extern u8 D_L39_00479820[];
+extern u8 D_L39_00479830[];
+
+s32 func_L39_0050BB88(BN_0050BB88 *a, u8 **out, s32 arg2, CTX_0050BB88 *ctx) {
+    BN_0050BB88 *tmp;
+    u8 *p;
+    s32 top;
+    s32 b, c;
+    s32 i;
+    s32 len;
+    s32 n;
+
+    tmp = &ctx->bn[ctx->tos];
+    p = 0;
+    top = a->top;
+    i = top * 64;
+    if (top == 0) {
+        return 0;
+    }
+    if (top == 1) {
+        if (a->d[0] == 0x10001) {
+            p = D_L39_00479830;
+        } else if (a->d[0] == 17) {
+            p = D_L39_00479820;
+        } else if (a->d[0] == 3) {
+            p = D_L39_00479810;
+        }
+        b = 1;
+        c = 1;
+        i = 64;
+    } else if (i >= 256) {
+        b = 5;
+        c = 16;
+        i = 13;
+    } else if (i >= 128) {
+        b = 4;
+        c = 8;
+        i = 16;
+    } else {
+        b = 3;
+        c = 4;
+        i = 22;
+    }
+    n = (top * i + 5) / 4;
+    if (p == 0) {
+        if (tmp->dmax < n) {
+            func_L39_004FC4B8((BN_0050B748 *)tmp, n);
+        }
+        p = (u8 *)tmp->d;
+        len = func_L39_0050BD10(p + 4, a, b) + 2;
+        p[2] = b;
+        p[3] = c;
+        p[0] = len >> 8;
+        p[1] = len;
+    } else {
+        len = 8;
+    }
+    *out = p;
+    return len + 2;
+}
+/* localdecomp:end func_L39_0050BB88 */
 
 /* localdecomp:start func_L39_0050BD10 */
 typedef struct {
